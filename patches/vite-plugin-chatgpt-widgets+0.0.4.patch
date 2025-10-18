@@ -1,0 +1,27 @@
+diff --git a/node_modules/vite-plugin-chatgpt-widgets/dist/cjs/index.js b/node_modules/vite-plugin-chatgpt-widgets/dist/cjs/index.js
+index 58b736a..5dcefdb 100644
+--- a/node_modules/vite-plugin-chatgpt-widgets/dist/cjs/index.js
++++ b/node_modules/vite-plugin-chatgpt-widgets/dist/cjs/index.js
+@@ -31,6 +31,8 @@ function transformHtmlWithAbsoluteUrls(html, baseUrl) {
+     html = html.replace(/(<script[^>]+src=["'])\/([^"']+)(["'])/g, (_match, prefix, path, suffix) => `${prefix}${normalizedBase}${path}${suffix}`);
+     // Transform link href attributes (for modulepreload, stylesheets, etc.)
+     html = html.replace(/(<link[^>]+href=["'])\/([^"']+)(["'])/g, (_match, prefix, path, suffix) => `${prefix}${normalizedBase}${path}${suffix}`);
++    html = html.replace(/(from\s+["'])\/([^"']+)(["'])/g, (_match, prefix, path, suffix) => `${prefix}${normalizedBase}${path}${suffix}`);
++    html = html.replace(/(import\s+["'])\/([^"']+)(["'])/g, (_match, prefix, path, suffix) => `${prefix}${normalizedBase}${path}${suffix}`);
+     return html;
+ }
+ /**
+diff --git a/node_modules/vite-plugin-chatgpt-widgets/dist/esm/index.js b/node_modules/vite-plugin-chatgpt-widgets/dist/esm/index.js
+index 43944cb..f09c67a 100644
+--- a/node_modules/vite-plugin-chatgpt-widgets/dist/esm/index.js
++++ b/node_modules/vite-plugin-chatgpt-widgets/dist/esm/index.js
+@@ -24,6 +24,9 @@ function transformHtmlWithAbsoluteUrls(html, baseUrl) {
+     html = html.replace(/(<script[^>]+src=["'])\/([^"']+)(["'])/g, (_match, prefix, path, suffix) => `${prefix}${normalizedBase}${path}${suffix}`);
+     // Transform link href attributes (for modulepreload, stylesheets, etc.)
+     html = html.replace(/(<link[^>]+href=["'])\/([^"']+)(["'])/g, (_match, prefix, path, suffix) => `${prefix}${normalizedBase}${path}${suffix}`);
++    // Transform inline module imports like: import RefreshRuntime from "/@react-refresh"
++    html = html.replace(/(from\s+["'])\/([^"']+)(["'])/g, (_match, prefix, path, suffix) => `${prefix}${normalizedBase}${path}${suffix}`);
++    html = html.replace(/(import\s+["'])\/([^"']+)(["'])/g, (_match, prefix, path, suffix) => `${prefix}${normalizedBase}${path}${suffix}`);
+     return html;
+ }
+ /**

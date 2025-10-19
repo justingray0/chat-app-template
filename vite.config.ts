@@ -1,24 +1,24 @@
-import path from "path";
-import react from "@vitejs/plugin-react";
+import path from 'path';
+import react from '@vitejs/plugin-react';
 import {
   chatGPTWidgetPlugin,
   getWidgetHTML,
   getWidgets,
-} from "vite-plugin-chatgpt-widgets";
-import { ViteMcp } from "vite-plugin-mcp";
-import { defineConfig } from "vite";
-import { z } from "zod";
+} from 'vite-plugin-chatgpt-widgets';
+import { ViteMcp } from 'vite-plugin-mcp';
+import { defineConfig } from 'vite';
+import { z } from 'zod';
 
 export default defineConfig({
   plugins: [
     react(),
     chatGPTWidgetPlugin({
-      widgetsDir: "src/chatgpt-widgets",
-      baseUrl: "http://localhost:5173",
+      widgetsDir: 'src/chatgpt-widgets',
+      baseUrl: 'http://localhost:5173',
     }),
     ViteMcp({
       async mcpServerSetup(server, viteServer) {
-        const widgets = await getWidgets("src/chatgpt-widgets", {
+        const widgets = await getWidgets('src/chatgpt-widgets', {
           devServer: viteServer,
         });
 
@@ -42,7 +42,7 @@ export default defineConfig({
                 contents: [
                   {
                     uri: resourceUri,
-                    mimeType: "text/html+skybridge",
+                    mimeType: 'text/html+skybridge',
                     text: content,
                   },
                 ],
@@ -55,9 +55,9 @@ export default defineConfig({
             {
               title: `Show ${widget.name}`,
               _meta: {
-                "openai/outputTemplate": resourceUri,
-                "openai/toolInvocation/invoking": `Displaying ${widget.name}`,
-                "openai/toolInvocation/invoked": `Displayed ${widget.name}`,
+                'openai/outputTemplate': resourceUri,
+                'openai/toolInvocation/invoking': `Displaying ${widget.name}`,
+                'openai/toolInvocation/invoked': `Displayed ${widget.name}`,
               },
               inputSchema: {
                 payload: z.string().optional(),
@@ -65,7 +65,7 @@ export default defineConfig({
             },
             async () => ({
               content: [
-                { type: "text", text: `Displayed the ${widget.name}!` },
+                { type: 'text', text: `Displayed the ${widget.name}!` },
               ],
               structuredContent: {},
             })
@@ -78,10 +78,10 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src"),
+      '@': path.resolve(__dirname, './src'),
     },
   },
   optimizeDeps: {
-    exclude: ["lucide-react"],
+    exclude: ['lucide-react'],
   },
 });

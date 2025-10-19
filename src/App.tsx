@@ -1,11 +1,8 @@
-import './App.css';
+import "./App.css";
+import Widget from "./chatgpt-widgets/Widget";
 
 function App() {
-  return (
-    <>
-      <div>Start prompting.</div>
-    </>
-  );
+  return <Widget />;
 }
 
 export default App;

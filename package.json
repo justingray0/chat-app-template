@@ -11,7 +11,7 @@
     "format:check": "prettier --check .",
     "typecheck": "tsc --noEmit --strict",
     "preview": "vite preview",
-    "mcp:tools": "bash ./scripts/mcp-tools.sh",
+    "mcp:tools": "node ./scripts/mcp-tools.js",
     "postinstall": "patch-package"
   },
   "dependencies": {

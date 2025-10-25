@@ -7,13 +7,13 @@ import {
 } from '@/hooks';
 import { Button } from '@/components/ui/button';
 
-interface WidgetProps extends Record<string, unknown> {
+type WidgetProps = {
   message?: string;
-}
+};
 
-interface WidgetStateType extends Record<string, unknown> {
+type WidgetStateType = {
   count: number;
-}
+};
 
 export default function Widget() {
   const displayMode = useDisplayMode();

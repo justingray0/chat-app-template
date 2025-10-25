@@ -34,7 +34,7 @@ type API = {
   requestDisplayMode: RequestDisplayMode;
 };
 
-export type UnknownObject = Record<string, unknown>;
+export type UnknownObject = object;
 
 export type Theme = "light" | "dark";
 

@@ -1,7 +1,7 @@
 import path from 'path';
 import react from '@vitejs/plugin-react';
 import { chatGPTWidgetPlugin } from 'vite-plugin-chatgpt-widgets';
-import { ViteMcp } from 'vite-plugin-mcp';
+import { ViteMcp } from './plugins/vite-mcp';
 import mcpServerSetup from './src/mcp';
 import { defineConfig } from 'vite';
 

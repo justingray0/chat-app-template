@@ -1,7 +1,6 @@
-import type { McpServer } from 'vite-plugin-mcp';
+import type { McpServer } from '../plugins/vite-mcp';
 import type { ViteDevServer } from 'vite';
 import { getWidgetHTML, getWidgets } from 'vite-plugin-chatgpt-widgets';
-import { z } from 'zod';
 
 export default async function mcp(
   server: McpServer,
@@ -47,9 +46,6 @@ export default async function mcp(
           'openai/outputTemplate': resourceUri,
           'openai/toolInvocation/invoking': `Displaying ${widget.name}`,
           'openai/toolInvocation/invoked': `Displayed ${widget.name}`,
-        },
-        inputSchema: {
-          payload: z.string().optional(),
         },
       },
       async () => ({

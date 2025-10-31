@@ -7,7 +7,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const app = express();
-const PORT = process.env.WIDGET_PREVIEW_PORT || 5173;
+const PORT = process.env.WIDGET_PREVIEW_PORT || 5174;
 const MCP_BASE_URL = process.env.MCP_BASE_URL || 'http://localhost:5173';
 const MCP_ROUTE = '/__mcp';
 

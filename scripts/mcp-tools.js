@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const DEFAULT_BASE_URL = 'http://localhost:5174';
+const DEFAULT_BASE_URL = 'http://localhost:5173';
 const DEFAULT_ROUTE = '/__mcp';
 const REQUEST_PROTOCOL_VERSION = '2025-03-26';
 const CLIENT_INFO = { name: 'simple-http-client', version: '0.0.0' };
@@ -22,13 +22,13 @@ async function main() {
       params: {
         protocolVersion: REQUEST_PROTOCOL_VERSION,
         capabilities: { tools: {} },
-        clientInfo: CLIENT_INFO
-      }
+        clientInfo: CLIENT_INFO,
+      },
     };
 
     const initResponse = await sendRpc(endpoint, initPayload, {
       label: 'initialize',
-      timeoutMs: connectTimeoutMs
+      timeoutMs: connectTimeoutMs,
     });
 
     const initMessage = selectMessage(initResponse.json, 'init');
@@ -36,35 +36,38 @@ async function main() {
       throw new Error('Initialize response did not include an "init" message.');
     }
     if ('error' in initMessage) {
-      throw new Error(`Initialize failed: ${JSON.stringify(initMessage.error)}`);
+      throw new Error(
+        `Initialize failed: ${JSON.stringify(initMessage.error)}`
+      );
     }
 
-    const negotiatedProtocol = initMessage.result?.protocolVersion ?? REQUEST_PROTOCOL_VERSION;
+    const negotiatedProtocol =
+      initMessage.result?.protocolVersion ?? REQUEST_PROTOCOL_VERSION;
     const sessionId = initResponse.headers.get('mcp-session-id') ?? undefined;
 
     const initializedNotification = {
       jsonrpc: '2.0',
-      method: 'notifications/initialized'
+      method: 'notifications/initialized',
     };
     await sendRpc(endpoint, initializedNotification, {
       label: 'notifications/initialized',
       timeoutMs: requestTimeoutMs,
       sessionId,
       protocolVersion: negotiatedProtocol,
-      expectBody: false
+      expectBody: false,
     });
 
     const listPayload = {
       jsonrpc: '2.0',
       id: 'tools',
       method: 'tools/list',
-      params: {}
+      params: {},
     };
     const listResponse = await sendRpc(endpoint, listPayload, {
       label: 'tools/list',
       timeoutMs: requestTimeoutMs,
       sessionId,
-      protocolVersion: negotiatedProtocol
+      protocolVersion: negotiatedProtocol,
     });
 
     const listMessage = selectMessage(listResponse.json, 'tools');
@@ -72,7 +75,9 @@ async function main() {
       throw new Error('tools/list response did not include a "tools" message.');
     }
     if ('error' in listMessage) {
-      throw new Error(`tools/list failed: ${JSON.stringify(listMessage.error)}`);
+      throw new Error(
+        `tools/list failed: ${JSON.stringify(listMessage.error)}`
+      );
     }
 
     const tools = listMessage.result?.tools ?? [];
@@ -89,12 +94,12 @@ async function sendRpc(url, payload, options) {
     timeoutMs,
     sessionId,
     protocolVersion,
-    expectBody = true
+    expectBody = true,
   } = options;
 
   const headers = {
     'content-type': 'application/json',
-    accept: 'application/json, text/event-stream'
+    accept: 'application/json, text/event-stream',
   };
   if (sessionId) {
     headers['mcp-session-id'] = sessionId;
@@ -106,17 +111,24 @@ async function sendRpc(url, payload, options) {
   const body = JSON.stringify(payload);
   logRequest(label, url, headers, body);
 
-  const response = await fetchWithTimeout(url, {
-    method: 'POST',
-    headers,
-    body
-  }, timeoutMs, label);
+  const response = await fetchWithTimeout(
+    url,
+    {
+      method: 'POST',
+      headers,
+      body,
+    },
+    timeoutMs,
+    label
+  );
 
   const responseHeaders = Object.fromEntries(response.headers.entries());
   console.log(`[${label}] Response status: ${response.status}`);
   console.log(`[${label}] Response headers:`, responseHeaders);
 
-  const text = expectBody ? await response.text() : await safeReadBody(response);
+  const text = expectBody
+    ? await response.text()
+    : await safeReadBody(response);
   if (text) {
     console.log(`[${label}] Response body: ${text}`);
   }
@@ -130,7 +142,9 @@ async function sendRpc(url, payload, options) {
     try {
       json = JSON.parse(text);
     } catch (error) {
-      throw new Error(`Failed to parse JSON for ${label}: ${formatError(error)}`);
+      throw new Error(
+        `Failed to parse JSON for ${label}: ${formatError(error)}`
+      );
     }
   }
 
@@ -189,7 +203,9 @@ function resolveEndpoint(base, route) {
   try {
     return new URL(normalizedRoute, ensureTrailingSlash(base));
   } catch (error) {
-    throw new Error(`Invalid MCP endpoint configuration: ${formatError(error)}`);
+    throw new Error(
+      `Invalid MCP endpoint configuration: ${formatError(error)}`
+    );
   }
 }
 

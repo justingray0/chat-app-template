@@ -2,12 +2,14 @@ import path from 'path';
 import react from '@vitejs/plugin-react';
 import { chatGPTWidgetPlugin } from 'vite-plugin-chatgpt-widgets';
 import { ViteMcp } from './plugins/vite-mcp';
+import { viteOpenaiInject } from './src/plugins/vite-openai-inject';
 import mcpServerSetup from './src/mcp';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
   plugins: [
     react(),
+    viteOpenaiInject(),
     chatGPTWidgetPlugin({
       widgetsDir: 'src/chatgpt-widgets',
       baseUrl: 'http://localhost:5173',
@@ -21,18 +23,7 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
-  build: {
-    rollupOptions: {
-      output: {
-        manualChunks: undefined,
-        inlineDynamicImports: true,
-      },
-    },
-    manifest: false,
-    cssCodeSplit: false,
-  },
   optimizeDeps: {
-    include: ['react', 'react-dom'],
     exclude: ['lucide-react'],
   },
 });

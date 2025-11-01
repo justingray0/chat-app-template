@@ -1,3 +1,10 @@
+import type { Plugin } from 'vite';
+
+export function viteOpenaiInject(): Plugin {
+  return {
+    name: 'vite-openai-inject',
+    transformIndexHtml(html: string) {
+      const openaiMockScript = `
 /**
  * Mock implementation of window.openai for ChatGPT widget preview
  * This provides all the hooks and APIs that widgets expect in the ChatGPT environment
@@ -53,7 +60,7 @@
 
     callTool: async function (name, args) {
       console.log('[OpenAI Mock] callTool called:', { name, args });
-      return { result: `Mock result for tool: ${name}` };
+      return { result: \`Mock result for tool: \${name}\` };
     },
 
     sendFollowUpMessage: async function (args) {
@@ -124,3 +131,66 @@
 
   console.log('[OpenAI Mock] Initialized window.openai with mock implementation');
 })();
+      `;
+
+      // Inject globals from URL query parameters
+      const globalsScript = `
+(() => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const toolInput = urlParams.get('toolInput');
+  const toolOutput = urlParams.get('toolOutput');
+  const widgetState = urlParams.get('widgetState');
+
+  if (toolInput) {
+    try {
+      window.__updateOpenAiGlobals({ toolInput: JSON.parse(toolInput) });
+    } catch (e) {
+      console.error('Failed to parse toolInput:', e);
+    }
+  }
+
+  if (toolOutput) {
+    try {
+      window.__updateOpenAiGlobals({ toolOutput: JSON.parse(toolOutput) });
+    } catch (e) {
+      console.error('Failed to parse toolOutput:', e);
+    }
+  }
+
+  if (widgetState) {
+    try {
+      window.__updateOpenAiGlobals({ widgetState: JSON.parse(widgetState) });
+    } catch (e) {
+      console.error('Failed to parse widgetState:', e);
+    }
+  }
+})();
+      `;
+
+      // Find the head tag and inject scripts
+      const headEndIndex = html.indexOf('</head>');
+      if (headEndIndex === -1) {
+        // If no head tag, inject after the first meta tag or at the beginning
+        const metaTagIndex = html.indexOf('<meta');
+        if (metaTagIndex !== -1) {
+          const metaEndIndex = html.indexOf('>', metaTagIndex) + 1;
+          return (
+            html.slice(0, metaEndIndex) +
+            `<script>${openaiMockScript}</script>` +
+            `<script>${globalsScript}</script>` +
+            html.slice(metaEndIndex)
+          );
+        } else {
+          return `<script>${openaiMockScript}</script><script>${globalsScript}</script>${html}`;
+        }
+      }
+
+      return (
+        html.slice(0, headEndIndex) +
+        `<script>${openaiMockScript}</script>` +
+        `<script>${globalsScript}</script>` +
+        html.slice(headEndIndex)
+      );
+    },
+  };
+}
